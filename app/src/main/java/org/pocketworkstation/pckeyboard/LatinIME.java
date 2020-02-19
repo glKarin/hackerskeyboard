@@ -80,6 +80,83 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+//k harmattan
+class ModKey
+{
+    public static final int MOD_KEY_STATE_RELEASED = 0;
+    public static final int MOD_KEY_STATE_PRESSED = 1;
+    public static final int MOD_KEY_STATE_LOCKED = 2;
+
+    public int state = MOD_KEY_STATE_RELEASED;
+
+    public boolean Pressed()
+    {
+        return state == MOD_KEY_STATE_PRESSED;
+    }
+
+    public boolean Released()
+    {
+        return state == MOD_KEY_STATE_RELEASED;
+    }
+
+    public boolean Locked()
+    {
+        return state == MOD_KEY_STATE_LOCKED;
+    }
+
+    public boolean Downed()
+    {
+        return state != MOD_KEY_STATE_RELEASED;
+    }
+
+    public void Press()
+    {
+        state = MOD_KEY_STATE_PRESSED;
+    }
+
+    public void Release()
+    {
+        state = MOD_KEY_STATE_RELEASED;
+    }
+
+    public void Touch()
+    {
+        state = Next();
+    }
+
+    public int Next()
+    {
+        int ret = (++state) % 3;
+        Log.e("modkey", "" + ret);
+        return ret;
+    }
+
+    public void SetState(boolean s)
+    {
+        state = s ? MOD_KEY_STATE_PRESSED : MOD_KEY_STATE_RELEASED;
+    }
+
+    public void SetState(int s)
+    {
+        if(s < MOD_KEY_STATE_RELEASED || s > MOD_KEY_STATE_LOCKED) return;
+        state = s;
+    }
+
+    public static boolean IsPressed(int state)
+    {
+        return state == MOD_KEY_STATE_PRESSED;
+    }
+
+    public static boolean IsReleased(int state)
+    {
+        return state == MOD_KEY_STATE_RELEASED;
+    }
+
+    public static boolean IsLocked(int state)
+    {
+        return state == MOD_KEY_STATE_LOCKED;
+    }
+}
 /**
  * Input method implementation for Qwerty'ish keyboard.
  */
@@ -191,7 +268,8 @@ public class LatinIME extends InputMethodService implements
     private final boolean mBigramSuggestionEnabled = false;
     private boolean mAutoCorrectOn;
     // TODO move this state variable outside LatinIME
-    private boolean mModCtrl;
+    //k private boolean mModCtrl;
+    private ModKey mModCtrl = new ModKey();
     private boolean mModAlt;
     private boolean mModMeta;
     private boolean mModFn;
@@ -807,7 +885,7 @@ public class LatinIME extends InputMethodService implements
         mPredictionOnForMode = false;
         mCompletionOn = false;
         mCompletions = null;
-        mModCtrl = false;
+        mModCtrl.Release(); //k mModCtrl = false;
         mModAlt = false;
         mModMeta = false;
         mModFn = false;
@@ -1497,7 +1575,7 @@ public class LatinIME extends InputMethodService implements
     private int getMetaState(boolean shifted) {
         int meta = 0;
         if (shifted) meta |= KeyEvent.META_SHIFT_ON | KeyEvent.META_SHIFT_LEFT_ON;
-        if (mModCtrl) meta |= KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON;
+        if (mModCtrl.Downed()) meta |= KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON;
         if (mModAlt) meta |= KeyEvent.META_ALT_ON | KeyEvent.META_ALT_LEFT_ON;
         if (mModMeta) meta |= KeyEvent.META_META_ON | KeyEvent.META_META_LEFT_ON;
         return meta;
@@ -1604,7 +1682,7 @@ public class LatinIME extends InputMethodService implements
             //Log.i(TAG, "send SHIFT down");
             sendShiftKey(ic, true);
         }
-        if (mModCtrl && (!mCtrlKeyState.isChording() || delayChordingCtrlModifier())) {
+        if (mModCtrl.Downed() && (!mCtrlKeyState.isChording() || delayChordingCtrlModifier())) {
             sendCtrlKey(ic, true, false);
         }
         if (mModAlt && (!mAltKeyState.isChording() || delayChordingAltModifier())) {
@@ -1625,7 +1703,7 @@ public class LatinIME extends InputMethodService implements
             if (sendKey) sendAltKey(ic, false, false);
             if (!mAltKeyState.isChording()) setModAlt(false);
         }
-        if (mModCtrl && (!mCtrlKeyState.isChording()  || delayChordingCtrlModifier())) {
+        if (mModCtrl.Pressed() && (!mCtrlKeyState.isChording()  || delayChordingCtrlModifier())) {
             if (sendKey) sendCtrlKey(ic, false, false);
             if (!mCtrlKeyState.isChording()) setModCtrl(false);
         }
@@ -1799,14 +1877,14 @@ public class LatinIME extends InputMethodService implements
     public void sendModifiableKeyChar(char ch) {
         // Support modified key events
         boolean modShift = isShiftMod();
-        if ((modShift || mModCtrl || mModAlt || mModMeta) && ch > 0 && ch < 127) {
+        if ((modShift || mModCtrl.Downed() || mModAlt || mModMeta) && ch > 0 && ch < 127) {
             InputConnection ic = getCurrentInputConnection();
             if (isConnectbot()) {
                 if (mModAlt) {
                     // send ESC prefix
                     ic.commitText(Character.toString((char) 27), 1);
                 }
-                if (mModCtrl) {
+                if (mModCtrl.Downed()) {
                     int code = ch & 31;
                     if (code == 9) {
                         sendTab();
@@ -1833,11 +1911,11 @@ public class LatinIME extends InputMethodService implements
                 boolean upper = (combinedCode & KF_UPPER) > 0;
                 boolean letter = (combinedCode & KF_LETTER) > 0;
                 boolean shifted = modShift && (upper || shiftable);
-                if (letter && !mModCtrl && !mModAlt && !mModMeta) {
+                if (letter && !mModCtrl.Downed() && !mModAlt && !mModMeta) {
                     // Try workaround for issue 179 where letters don't get upcased
                     ic.commitText(Character.toString(ch), 1);
                     handleModifierKeysUp(false, false);
-                } else if ((ch == 'a' || ch == 'A') && mModCtrl) {
+                } else if ((ch == 'a' || ch == 'A') && mModCtrl.Downed()) {
                     // Special case for Ctrl-A to work around accidental select-all-then-replace.
                     if (sKeyboardSettings.ctrlAOverride == 0) {
                         // Ignore Ctrl-A, treat Ctrl-Alt-A as Ctrl-A.
@@ -1967,7 +2045,9 @@ public class LatinIME extends InputMethodService implements
             // Ctrl key is handled in onPress() when device has distinct
             // multi-touch panel.
             if (!distinctMultiTouch)
-                setModCtrl(!mModCtrl);
+            {
+                setModCtrl(mModCtrl.Next()); //k setModCtrl(!mModCtrl);
+            }
             break;
         case LatinKeyboardView.KEYCODE_ALT_LEFT:
             // Alt key is handled in onPress() when device has distinct
@@ -2182,7 +2262,14 @@ public class LatinIME extends InputMethodService implements
     private void setModCtrl(boolean val) {
         // Log.i("LatinIME", "setModCtrl "+ mModCtrl + "->" + val + ", chording=" + mCtrlKeyState.isChording());
         mKeyboardSwitcher.setCtrlIndicator(val);
-        mModCtrl = val;
+        mModCtrl.SetState(val);
+    }
+
+    //k harmattan
+    private void setModCtrl(int val) {
+        // Log.i("LatinIME", "setModCtrl "+ mModCtrl + "->" + val + ", chording=" + mCtrlKeyState.isChording());
+        mKeyboardSwitcher.setCtrlIndicator(val);
+        mModCtrl.SetState(val);
     }
 
     private void setModAlt(boolean val) {
@@ -2201,7 +2288,7 @@ public class LatinIME extends InputMethodService implements
         //Log.i("LatinIME", "setModFn " + mModFn + "->" + val + ", chording=" + mFnKeyState.isChording());
         mModFn = val;
         mKeyboardSwitcher.setFn(val);
-        mKeyboardSwitcher.setCtrlIndicator(mModCtrl);
+        mKeyboardSwitcher.setCtrlIndicator(mModCtrl.Downed());
         mKeyboardSwitcher.setAltIndicator(mModAlt);
         mKeyboardSwitcher.setMetaIndicator(mModMeta);
     }
@@ -2293,7 +2380,7 @@ public class LatinIME extends InputMethodService implements
         }
 
         if (isAlphabet(primaryCode) && isPredictionOn()
-                && !mModCtrl && !mModAlt && !mModMeta
+                && !mModCtrl.Downed() && !mModAlt && !mModMeta
                 && !isCursorTouchingWord()) {
             if (!mPredicting) {
                 mPredicting = true;
@@ -2303,7 +2390,7 @@ public class LatinIME extends InputMethodService implements
             }
         }
 
-        if (mModCtrl || mModAlt || mModMeta) {
+        if (mModCtrl.Downed() || mModAlt || mModMeta) {
             commitTyped(getCurrentInputConnection(), true); // sets mPredicting=false
         }
 
@@ -3137,7 +3224,7 @@ public class LatinIME extends InputMethodService implements
             mKeyboardSwitcher.setAutoModeSwitchStateMomentary();
         } else if (distinctMultiTouch
                 && primaryCode == LatinKeyboardView.KEYCODE_CTRL_LEFT) {
-            setModCtrl(!mModCtrl);
+            setModCtrl(mModCtrl.Next()); //k setModCtrl(!mModCtrl);
             mCtrlKeyState.onPress();
             sendCtrlKey(ic, true, true);
         } else if (distinctMultiTouch
@@ -3190,7 +3277,7 @@ public class LatinIME extends InputMethodService implements
         } else if (distinctMultiTouch
                 && primaryCode == LatinKeyboardView.KEYCODE_CTRL_LEFT) {
             if (mCtrlKeyState.isChording()) {
-                setModCtrl(false);
+                setModCtrl(0);
             }
             sendCtrlKey(ic, false, true);
             mCtrlKeyState.onRelease();

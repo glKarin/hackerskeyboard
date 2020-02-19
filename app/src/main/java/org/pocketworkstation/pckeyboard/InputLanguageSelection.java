@@ -40,10 +40,10 @@ public class InputLanguageSelection extends PreferenceActivity {
     private static final String TAG = "PCKeyboardILS";
     private ArrayList<Loc> mAvailableLanguages = new ArrayList<Loc>();
     private static final String[] BLACKLIST_LANGUAGES = {
-        "ko", "ja", "zh"
+        "ko", "ja",//k "zh"
     };
 
-    // Languages for which auto-caps should be disabled
+    // Languages for which main_setup_btn_input_langauto-caps should be disabled
     public static final Set<String> NOCAPS_LANGUAGES = new HashSet<String>();
     static {
         NOCAPS_LANGUAGES.add("ar");
@@ -73,7 +73,7 @@ public class InputLanguageSelection extends PreferenceActivity {
         "fa", "fi", "fr", "fr_CA", "he", "hr", "hu", "hu_QY", "hy", "in",
         "it", "iw", "ja", "ka", "ko", "lo", "lt", "lv", "nb", "nl", "pl",
         "pt", "pt_PT", "rm", "ro", "ru", "ru_PH", "si", "sk", "sk_QY", "sl",
-        "sr", "sv", "ta", "th", "tl", "tr", "uk", "vi", "zh_CN", "zh_TW"
+        "sr", "sv", "ta", "th", "tl", "tr", "uk", "vi", "zh_CN",//k "zh_TW"
     };
 
     private static final String[] KBD_5_ROW = {
@@ -81,14 +81,16 @@ public class InputLanguageSelection extends PreferenceActivity {
         "en", "en_CX", "en_DV", "en_GB", "es", "es_LA", "fa", "fi", "fr",
         "fr_CA", "he", "hr", "hu", "hu_QY", "hy", "it", "iw", "lo", "lt",
         "nb", "pt_PT", "ro", "ru", "ru_PH", "si", "sk", "sk_QY", "sl",
-        "sr", "sv", "ta", "th", "tr", "uk"
+        "sr", "sv", "ta", "th", "tr", "uk",
+            "zh_CN",
     };
 
     private static final String[] KBD_4_ROW = {
         "ar", "bg", "bg_ST", "cs", "cs_QY", "da", "de", "de_NE", "el",
         "en", "en_CX", "en_DV", "es", "es_LA", "es_US", "fa", "fr", "fr_CA",
         "he", "hr", "hu", "hu_QY", "iw", "nb", "ru", "ru_PH", "sk", "sk_QY",
-        "sl", "sr", "sv", "tr", "uk"
+        "sl", "sr", "sv", "tr", "uk",
+            "zh_CN",
     };
 
     private static String getLocaleName(Locale l) {

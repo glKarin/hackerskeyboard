@@ -729,6 +729,20 @@ public class LatinKeyboardBaseView extends View implements PointerTracker.UIProx
             invalidateKey(mKeyboard.setCtrlIndicator(active));
         }
     }
+
+    //k harmattan
+    public void setCtrlIndicator_lock(boolean active) {
+        if (mKeyboard != null) {
+            invalidateKey(mKeyboard.setCtrlIndicator_lock(active));
+        }
+    }
+
+    //k harmattan
+    public void setCtrlIndicator(int active) {
+        if (mKeyboard != null) {
+            invalidateKey(mKeyboard.setCtrlIndicator(active));
+        }
+    }
     
     public void setAltIndicator(boolean active) {
         if (mKeyboard != null) {
