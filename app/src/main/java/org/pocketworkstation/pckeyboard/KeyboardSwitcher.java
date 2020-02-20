@@ -473,6 +473,12 @@ public class KeyboardSwitcher implements
         mInputView.setCtrlIndicator(active);
     }
 
+    //k harmattan
+    public void setAltIndicator(int active) {
+        if (mInputView == null) return;
+        mInputView.setAltIndicator(active);
+    }
+
     public void setAltIndicator(boolean active) {
         if (mInputView == null) return;
         mInputView.setAltIndicator(active);

@@ -1082,6 +1082,16 @@ public class Keyboard {
         return mCtrlKey;
     }
 
+    //k harmattan
+    public Key setAltIndicator(int active) {
+        if (mAltKey != null)
+        {
+            mAltKey.on = (active & 1) != 0 ? true : false;
+            mAltKey.locked = (active & 2) != 0 ? true : false;
+        }
+        return mAltKey;
+    }
+
     public Key setAltIndicator(boolean active) {
         if (mAltKey != null) mAltKey.on = active;
         return mAltKey;
