@@ -1604,6 +1604,8 @@ public class LatinIME extends InputMethodService implements
     }
 
     private boolean isShiftMod() {
+        if(!mKeyboardSwitcher.isAlphabetMode()) return false; //k harmattan disable shift mode on symbol view
+
         if (mShiftKeyState.isChording()) return true;
         if (mKeyboardSwitcher != null) {
             LatinKeyboardView kb = mKeyboardSwitcher.getInputView();
@@ -1625,7 +1627,11 @@ public class LatinIME extends InputMethodService implements
     }
 
     private void sendModifiedKeyDownUp(int key) {
-        sendModifiedKeyDownUp(key, isShiftMod());
+        // k harmattan shift+up/down/left/right on caps-locked(double shift) mode on alphaset view
+        int shiftState = getShiftState();
+        boolean capsLocked = (shiftState == Keyboard.SHIFT_LOCKED || shiftState == Keyboard.SHIFT_CAPS_LOCKED) && mKeyboardSwitcher.isAlphabetMode();
+
+        sendModifiedKeyDownUp(key, isShiftMod() || capsLocked);
     }
 
     private void sendShiftKey(InputConnection ic, boolean isDown) {
@@ -1712,7 +1718,9 @@ public class LatinIME extends InputMethodService implements
             //Log.i(TAG, "send SHIFT up");
             if (sendKey) sendShiftKey(ic, false);
             int shiftState = getShiftState();
-            if (!(mShiftKeyState.isChording() || shiftState == Keyboard.SHIFT_LOCKED)) {
+            if (!(mShiftKeyState.isChording() || shiftState == Keyboard.SHIFT_LOCKED
+                    || (shiftState == Keyboard.SHIFT_CAPS_LOCKED && mKeyboardSwitcher.isAlphabetMode()) // k harmattan shift+up/down/left/right on caps-locked(double shift) mode on alphaset view
+            )) {
                 resetShift();
             }
         }
