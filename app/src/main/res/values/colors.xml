@@ -47,4 +47,22 @@
     <color name="key_background_pressed_material_light">#2637474F</color>
     <color name="key_text_color_material_light">#000000</color>
     <color name="key_hint_letter_color_material_light">#B337474F</color>
+
+    <!-- k harmattan -->
+    <!--
+    bg: eceff1
+
+    key bg: fbfbfc
+    key press bg: d9dbdd
+
+    popup press bg: 80cbc4
+
+    special bg: dfe2e4
+    special press bg: d3d6d8
+    -->
+    <color name="key_background_material_harmattan">#fbfbfc</color>
+    <color name="key_background_pressed_material_harmattan">#d9dbdd</color>
+    <color name="key_text_color_material_harmattan">#000000</color>
+    <color name="key_hint_letter_color_material_harmattan">#B337474F</color>
+
 </resources>

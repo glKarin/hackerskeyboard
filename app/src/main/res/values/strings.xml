@@ -358,6 +358,9 @@
     <string name="layout_material_dark" translatable="false">Material Dark</string>
     <string name="layout_material_light" translatable="false">Material Light</string>
 
+    <!-- k harmattan -->
+    <string name="layout_material_harmattan"  translatable="false">Material (Harmattan)</string>
+
     <string-array name="keyboard_layout_modes" translatable="false">
         <item>@string/layout_ics</item>
         <item>@string/layout_ics_darker</item>
@@ -367,6 +370,8 @@
         <item>@string/layout_gingerbread</item>
         <item>@string/layout_stone_bold</item>
         <item>@string/layout_trans_neon</item>
+        <!-- k harmattan -->
+        <item>@string/layout_material_harmattan</item>
     </string-array>
 
     <!--
@@ -384,6 +389,8 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <!-- k harmattan -->
+        <item>8</item>
     </string-array>
 
     <string name="subtype_mode_keyboard">keyboard</string>
