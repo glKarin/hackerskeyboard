@@ -411,7 +411,7 @@
 
     <string name="title_ctrl_a_override">Ctrl-A (select all) override</string>
     <string name="toast_ctrl_a_override_info">Ctrl-A is disabled. Use Ctrl-Alt-A instead, or enable it in settings.</string>
-    <string name="default_ctrl_a_override">0</string>
+    <string name="default_ctrl_a_override">2</string> <!-- //k harmattan 0 -->
     <string-array name="ctrl_a_override_entries">
         <item>Disable Ctrl-A, use Ctrl-Alt-A instead</item>
         <item>Disable Ctrl-A completely</item>

@@ -20,6 +20,7 @@ import org.pocketworkstation.pckeyboard.LatinIMEUtil.RingCharBuffer;
 
 import com.google.android.voiceime.VoiceRecognitionTrigger;
 
+import org.pocketworkstation.pckeyboard.harmattan.HarmModKey;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
@@ -80,83 +81,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-//k harmattan
-class ModKey
-{
-    public static final int MOD_KEY_STATE_RELEASED = 0;
-    public static final int MOD_KEY_STATE_PRESSED = 1;
-    public static final int MOD_KEY_STATE_LOCKED = 2;
-
-    public int state = MOD_KEY_STATE_RELEASED;
-
-    public boolean Pressed()
-    {
-        return state == MOD_KEY_STATE_PRESSED;
-    }
-
-    public boolean Released()
-    {
-        return state == MOD_KEY_STATE_RELEASED;
-    }
-
-    public boolean Locked()
-    {
-        return state == MOD_KEY_STATE_LOCKED;
-    }
-
-    public boolean Downed()
-    {
-        return state != MOD_KEY_STATE_RELEASED;
-    }
-
-    public void Press()
-    {
-        state = MOD_KEY_STATE_PRESSED;
-    }
-
-    public void Release()
-    {
-        state = MOD_KEY_STATE_RELEASED;
-    }
-
-    public void Touch()
-    {
-        state = Next();
-    }
-
-    public int Next()
-    {
-        int ret = (++state) % 3;
-        Log.e("modkey", "" + ret);
-        return ret;
-    }
-
-    public void SetState(boolean s)
-    {
-        state = s ? MOD_KEY_STATE_PRESSED : MOD_KEY_STATE_RELEASED;
-    }
-
-    public void SetState(int s)
-    {
-        if(s < MOD_KEY_STATE_RELEASED || s > MOD_KEY_STATE_LOCKED) return;
-        state = s;
-    }
-
-    public static boolean IsPressed(int state)
-    {
-        return state == MOD_KEY_STATE_PRESSED;
-    }
-
-    public static boolean IsReleased(int state)
-    {
-        return state == MOD_KEY_STATE_RELEASED;
-    }
-
-    public static boolean IsLocked(int state)
-    {
-        return state == MOD_KEY_STATE_LOCKED;
-    }
-}
 /**
  * Input method implementation for Qwerty'ish keyboard.
  */
@@ -269,9 +193,9 @@ public class LatinIME extends InputMethodService implements
     private boolean mAutoCorrectOn;
     // TODO move this state variable outside LatinIME
     //k harmattan private boolean mModCtrl;
-    private ModKey mModCtrl = new ModKey();
+    private final HarmModKey mModCtrl = new HarmModKey();
     //k harmattan private boolean mModAlt;
-    private ModKey mModAlt = new ModKey();
+    private final HarmModKey mModAlt = new HarmModKey();
     private boolean mModMeta;
     private boolean mModFn;
     // Saved shift state when leaving alphabet mode, or when applying multitouch shift
@@ -2113,6 +2037,14 @@ public class LatinIME extends InputMethodService implements
             }
             sendEscape();
             break;
+        //k harmattan
+        // toggle extension
+        case LatinKeyboardView.KEYCODE_EXTENSION:
+            sKeyboardSettings.useExtension = !sKeyboardSettings.useExtension;
+            reloadKeyboards();
+            //startListening(false /* was a button press, was not a swipe */);
+            break;
+        //k harmattan
         case LatinKeyboardView.KEYCODE_DPAD_UP:
         case LatinKeyboardView.KEYCODE_DPAD_DOWN:
         case LatinKeyboardView.KEYCODE_DPAD_LEFT:
@@ -2378,6 +2310,11 @@ public class LatinIME extends InputMethodService implements
                 switcher.setShiftState(nextShiftState(getShiftState(), true));
             }
         } else {
+            //k harmattan
+            // reset toggle key state when change symbol keyboard
+            setModCtrl(0);
+            setModAlt(0);
+            //k harmattan
             switcher.toggleShift();
         }
     }
@@ -3585,6 +3522,11 @@ public class LatinIME extends InputMethodService implements
         if (switcher.isAlphabetMode()) {
             switcher.setShiftState(mSavedShiftState);
         }
+        //k harmattan
+        // reset toggle key state when change keyboard
+        setModCtrl(0);
+        setModAlt(0);
+        //k harmattan
 
         updateShiftKeyState(getCurrentInputEditorInfo());
     }

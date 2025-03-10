@@ -52,6 +52,11 @@ public class LatinKeyboardView extends LatinKeyboardBaseView {
     static final int KEYCODE_NEXT_LANGUAGE = -104;
     static final int KEYCODE_PREV_LANGUAGE = -105;
     static final int KEYCODE_COMPOSE = -10024;
+
+    //k harmattan
+    // toggle extension key
+    static final int KEYCODE_EXTENSION = -1001;
+    //k harmattan
     
 	// The following keycodes match (negative) KeyEvent keycodes.
     // Would be better to use the real KeyEvent values, but many

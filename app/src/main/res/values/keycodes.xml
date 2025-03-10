@@ -63,4 +63,7 @@
     <integer name="key_fkey_f11">-141</integer>
     <integer name="key_fkey_f12">-142</integer>
     <integer name="key_num_lock">-143</integer>
+    <!-- //k harmattan add -->
+    <integer name="key_extension">-1001</integer>
+    <!-- //k harmattan -->
 </resources>
